@@ -32,7 +32,10 @@ jobs:
         run: nci
 
       - name: Build
-        run: nr build
+        run: nr build basics.md advanced.md
+
+      - name: Copy index page
+        run: cp presentation-overview.html dist/index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
