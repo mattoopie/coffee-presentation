@@ -14,11 +14,20 @@ env:
   PRESENTATIONS: '["basics", "advanced"]'
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      presentations: ${{ steps.set.outputs.presentations }}
+    steps:
+      - id: set
+        run: echo "presentations=[\"basics\", \"advanced\"]" >> "$GITHUB_OUTPUT"
+
   build:
+    needs: setup
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        presentation: ${{ fromJson(env.PRESENTATIONS) }}
+        presentation: ${{ fromJson(needs.setup.outputs.presentations) }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -38,7 +47,7 @@ jobs:
           path: dist/${{ matrix.presentation }}
 
   deploy:
-    needs: build
+    needs: [setup, build]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -56,14 +65,12 @@ jobs:
       - name: Prepare final dist and index
         run: |
           mkdir -p final-dist
-          # Move folders to final structure
           for dir in artifacts/slidev-*; do
             name=${dir#artifacts/slidev-}
             mv "$dir" "final-dist/$name"
           done
           
-          # Convert JSON array to space-separated arguments for the script
-          NAMES=$(echo '${{ env.PRESENTATIONS }}' | jq -r '.[]')
+          NAMES=$(echo '${{ needs.setup.outputs.presentations }}' | jq -r '.[]')
           chmod +x generate-index.sh
           ./generate-index.sh $NAMES
 
