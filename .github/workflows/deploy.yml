@@ -10,52 +10,67 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: false
+env:
+  PRESENTATIONS: '["basics", "advanced"]'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        presentation: ${{ fromJson(env.PRESENTATIONS) }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-
-      - name: Setup @antfu/ni
-        run: npm i -g @antfu/ni
-
       - name: Install dependencies
-        run: nci
-
-      - name: Build basics
-        run: nr build --base /basics/ --out dist/basics/ basics.md
-
-      - name: Build advanced
-        run: nr build --base /advanced/ --out dist/advanced/ advanced.md
-
-      - name: Copy index page
-        run: cp presentation-overview.html dist/index.html
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - uses: actions/upload-pages-artifact@v4
-        id: deployment
+        run: |
+          npm i -g @antfu/ni
+          nci
+      - name: Build presentation
+        run: nr build --base /${{ matrix.presentation }}/ --out dist/${{ matrix.presentation }}/ ${{ matrix.presentation }}.md
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          path: dist
+          name: slidev-${{ matrix.presentation }}
+          path: dist/${{ matrix.presentation }}
 
   deploy:
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    needs: build
-    runs-on: ubuntu-latest
-    name: Deploy
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: slidev-*
+          merge-multiple: false
+
+      - name: Prepare final dist and index
+        run: |
+          mkdir -p final-dist
+          # Move folders to final structure
+          for dir in artifacts/slidev-*; do
+            name=${dir#artifacts/slidev-}
+            mv "$dir" "final-dist/$name"
+          done
+          
+          # Convert JSON array to space-separated arguments for the script
+          NAMES=$(echo '${{ env.PRESENTATIONS }}' | jq -r '.[]')
+          chmod +x generate-index.sh
+          ./generate-index.sh $NAMES
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: final-dist
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
