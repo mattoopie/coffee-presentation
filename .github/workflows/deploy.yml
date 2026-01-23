@@ -31,8 +31,11 @@ jobs:
       - name: Install dependencies
         run: nci
 
-      - name: Build
-        run: nr build basics.md advanced.md
+      - name: Build basics
+        run: nr build --base /basics/ --out dist/basics/ basics.md
+
+      - name: Build advanced
+        run: nr build --base /advanced/ --out dist/advanced/ advanced.md
 
       - name: Copy index page
         run: cp presentation-overview.html dist/index.html
