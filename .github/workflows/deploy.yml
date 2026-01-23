@@ -20,10 +20,11 @@ jobs:
       matrix:
         presentation: ${{ fromJson(env.PRESENTATIONS) }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
+          cache: pnpm
       - name: Install dependencies
         run: |
           npm i -g @antfu/ni
@@ -31,7 +32,7 @@ jobs:
       - name: Build presentation
         run: nr build --base /${{ matrix.presentation }}/ --out dist/${{ matrix.presentation }}/ ${{ matrix.presentation }}.md
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: slidev-${{ matrix.presentation }}
           path: dist/${{ matrix.presentation }}
@@ -43,10 +44,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: artifacts
           pattern: slidev-*
