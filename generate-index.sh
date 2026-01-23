@@ -9,7 +9,7 @@ cat <<EOF > "$OUTPUT_FILE"
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presentation Index</title>
+    <title>Coffee Presentations</title>
     <style>
         * {
             box-sizing: border-box;
@@ -19,7 +19,7 @@ cat <<EOF > "$OUTPUT_FILE"
         
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: linear-gradient(135deg, #2f1a05 0%, #513519 50%, #5b4228 100%);
             min-height: 100vh;
             padding: 3rem 1.5rem;
             color: #e4e4e7;
@@ -35,7 +35,7 @@ cat <<EOF > "$OUTPUT_FILE"
             font-weight: 700;
             text-align: center;
             margin-bottom: 0.5rem;
-            background: linear-gradient(90deg, #4EC5D4, #146b8c);
+            background: linear-gradient(90deg, #835e3f, #d5ad70);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -63,7 +63,7 @@ cat <<EOF > "$OUTPUT_FILE"
         
         .card-list li:hover {
             background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(78, 197, 212, 0.5);
+            border-color: rgba(207, 182, 149, 0.5);
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
@@ -79,7 +79,7 @@ cat <<EOF > "$OUTPUT_FILE"
         }
         
         .card-list a::before {
-            content: '📊';
+            content: '☕';
             margin-right: 1rem;
             font-size: 1.5rem;
         }
@@ -90,28 +90,12 @@ cat <<EOF > "$OUTPUT_FILE"
             opacity: 0;
             transform: translateX(-8px);
             transition: all 0.3s ease;
-            color: #4EC5D4;
+            color: #CFB695;
         }
         
         .card-list li:hover a::after {
             opacity: 1;
             transform: translateX(0);
-        }
-        
-        footer {
-            text-align: center;
-            margin-top: 4rem;
-            color: #71717a;
-            font-size: 0.875rem;
-        }
-        
-        footer a {
-            color: #4EC5D4;
-            text-decoration: none;
-        }
-        
-        footer a:hover {
-            text-decoration: underline;
         }
     </style>
 </head>
@@ -132,9 +116,6 @@ done
 cat <<EOF >> "$OUTPUT_FILE"
             </ul>
         </nav>
-        <footer>
-            Powered by <a href="https://sli.dev" target="_blank" rel="noopener">Slidev</a>
-        </footer>
     </div>
 </body>
 </html>
